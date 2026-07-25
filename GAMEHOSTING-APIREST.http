@@ -1,0 +1,6 @@
+@GAMEHOSTING_APIREST_HostAddress = http://localhost:5074
+
+GET {{GAMEHOSTING_APIREST_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
