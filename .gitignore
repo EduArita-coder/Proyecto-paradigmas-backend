@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/react
 # Edit at https://www.toptal.com/developers/gitignore?templates=react
 
+# Ignorar bin y obj
+bin/
+obj/
 ### react ###
 .DS_*
 *.log
