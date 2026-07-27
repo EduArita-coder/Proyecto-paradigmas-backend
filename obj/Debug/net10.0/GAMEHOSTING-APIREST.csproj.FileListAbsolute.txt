@@ -32,3 +32,15 @@ C:\Users\eduar\OneDrive\Escritorio\Proyecto PARADIGMAS\HosTING-Back-end\GAMEHOST
 C:\Users\eduar\OneDrive\Escritorio\Proyecto PARADIGMAS\HosTING-Back-end\GAMEHOSTING-APIREST\obj\Debug\net10.0\GAMEHOSTING-APIREST.pdb
 C:\Users\eduar\OneDrive\Escritorio\Proyecto PARADIGMAS\HosTING-Back-end\GAMEHOSTING-APIREST\obj\Debug\net10.0\GAMEHOSTING-APIREST.genruntimeconfig.cache
 C:\Users\eduar\OneDrive\Escritorio\Proyecto PARADIGMAS\HosTING-Back-end\GAMEHOSTING-APIREST\obj\Debug\net10.0\ref\GAMEHOSTING-APIREST.dll
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.csproj.AssemblyReference.cache
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.AssemblyInfoInputs.cache
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.AssemblyInfo.cs
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.csproj.CoreCompileInputs.cache
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.sourcelink.json
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.dll
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\refint\GAMEHOSTING-APIREST.dll
+C:\Users\HP\Proyecto-Paradigmas\Proyecto-paradigmas-backend\obj\Debug\net10.0\GAMEHOSTING-APIREST.pdb
