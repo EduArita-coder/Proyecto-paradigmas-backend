@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GAMEHOSTING-APIREST")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb7efb8228f2d9bb66e551b0dc43474d333420a7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+99b3461ebb176afd593401e3ba22ac5665e75064")]
 [assembly: System.Reflection.AssemblyProductAttribute("GAMEHOSTING-APIREST")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GAMEHOSTING-APIREST")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
