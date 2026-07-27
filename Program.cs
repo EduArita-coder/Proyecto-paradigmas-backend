@@ -1,12 +1,22 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using GAMEHOSTING_APIREST.Database;
+using GAMEHOSTING_APIREST.Entities;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddDbContext<>(options => 
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<GameHostingDbContext>(options => 
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configurar Identity
+builder.Services.AddIdentity<UserEntity, IdentityRole>()
+    .AddEntityFrameworkStores<GameHostingDbContext>()
+    .AddDefaultTokenProviders();
+
 
 var app = builder.Build();
 
