@@ -42,4 +42,18 @@ public class TransactionService
         await _context.SaveChangesAsync();
         return transaction;
     }
+
+    public async Task UpdateStatusBySessionIdAsync(string sessionId, string newStatus)
+    {
+        var transactions = await _context.Transactions
+            .Where(t => t.ExternalTransactionId == sessionId)
+            .ToListAsync();
+
+        foreach (var transaction in transactions)
+        {
+            transaction.Status = newStatus;
+        }
+
+        await _context.SaveChangesAsync();
+    }
 }
