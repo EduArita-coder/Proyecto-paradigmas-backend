@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using GAMEHOSTING_APIREST.Database;
+using GAMEHOSTING_APIREST.Entities;
 using GAMEHOSTING_APIREST.Services;
 using Scalar.AspNetCore;
 
