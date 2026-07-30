@@ -2,21 +2,31 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Entities;
+using GAMEHOSTING_APIREST.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<GameHostingDbContext>(options => 
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Configurar Identity
-builder.Services.AddIdentity<UserEntity, IdentityRole>()
-    .AddEntityFrameworkStores<GameHostingDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<TransactionService>();
 
+// CORS para permitir peticiones desde el frontend React
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -25,11 +35,10 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-
 }
+
+app.UseCors("AllowFrontend");
 app.UseHttpsRedirection();
-
 app.MapControllers();
-
 
 app.Run();

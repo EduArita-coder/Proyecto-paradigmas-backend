@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\eduar\\OneDrive\\Escritorio\\Proyecto PARADIGMAS\\HosTING-Back-end\\GAMEHOSTING-APIREST\\GAMEHOSTING-APIREST.csproj": {}
+    "C:\\Users\\HP\\Proyecto-Paradigmas\\Proyecto-paradigmas-backend\\GAMEHOSTING-APIREST.csproj": {}
   },
   "projects": {
-    "C:\\Users\\eduar\\OneDrive\\Escritorio\\Proyecto PARADIGMAS\\HosTING-Back-end\\GAMEHOSTING-APIREST\\GAMEHOSTING-APIREST.csproj": {
+    "C:\\Users\\HP\\Proyecto-Paradigmas\\Proyecto-paradigmas-backend\\GAMEHOSTING-APIREST.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\eduar\\OneDrive\\Escritorio\\Proyecto PARADIGMAS\\HosTING-Back-end\\GAMEHOSTING-APIREST\\GAMEHOSTING-APIREST.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Proyecto-Paradigmas\\Proyecto-paradigmas-backend\\GAMEHOSTING-APIREST.csproj",
         "projectName": "GAMEHOSTING-APIREST",
-        "projectPath": "C:\\Users\\eduar\\OneDrive\\Escritorio\\Proyecto PARADIGMAS\\HosTING-Back-end\\GAMEHOSTING-APIREST\\GAMEHOSTING-APIREST.csproj",
-        "packagesPath": "C:\\Users\\eduar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\eduar\\OneDrive\\Escritorio\\Proyecto PARADIGMAS\\HosTING-Back-end\\GAMEHOSTING-APIREST\\obj\\",
+        "projectPath": "C:\\Users\\HP\\Proyecto-Paradigmas\\Proyecto-paradigmas-backend\\GAMEHOSTING-APIREST.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\Proyecto-Paradigmas\\Proyecto-paradigmas-backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\eduar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -38,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.200"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net10.0": {
@@ -88,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.203/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
