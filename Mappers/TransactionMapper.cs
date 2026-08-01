@@ -5,7 +5,7 @@ namespace GAMEHOSTING_APIREST.Mappers;
 
 public static class TransactionMapper
 {
-    public static TransactionDto ToDto(Transaction transaction)
+    public static TransactionDto ToDto(TransactionEntity transaction)
     {
         return new TransactionDto
         {

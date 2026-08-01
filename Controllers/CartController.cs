@@ -5,7 +5,7 @@ using GAMEHOSTING_APIREST.Services.Interfaces;
 namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/carrito")]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;

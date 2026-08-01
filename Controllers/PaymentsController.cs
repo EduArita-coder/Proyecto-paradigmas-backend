@@ -1,89 +1,66 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GAMEHOSTING_APIREST.Dtos;
 using GAMEHOSTING_APIREST.Services;
+using GAMEHOSTING_APIREST.Services.Interfaces;
 
 namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/pagos")]
+[Authorize]
 public class PaymentsController : ControllerBase
 {
-    private readonly ProductService _productService;
+    private readonly ICartService _cartService;
+    private readonly IPaypalService _paypalService;
     private readonly TransactionService _transactionService;
 
-    public PaymentsController(ProductService productService, TransactionService transactionService)
+    public PaymentsController(ICartService cartService, IPaypalService paypalService, TransactionService transactionService)
     {
-        _productService = productService;
+        _cartService = cartService;
+        _paypalService = paypalService;
         _transactionService = transactionService;
     }
 
-    [HttpPost("create-checkout-session")]
-    public async Task<ActionResult<PaymentResponseDto>> CreateCheckoutSession(CreateCheckoutSessionDto dto)
+    [HttpPost("create-order")]
+    public async Task<ActionResult<PayPalOrderResponseDto>> CreateOrder(CreateCheckoutSessionDto dto)
     {
-        if (dto.Items == null || dto.Items.Count == 0)
-            return BadRequest("El carrito esta vacio.");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Verificar que todos los productos existan
-        foreach (var item in dto.Items)
-        {
-            var product = await _productService.GetByIdAsync(item.ProductId);
-            if (product is null)
-                return NotFound($"Producto con id {item.ProductId} no encontrado.");
-        }
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        // Generar un ID de sesion simulado (sera reemplazado por Stripe)
-        var sessionId = Guid.NewGuid().ToString();
+        var cart = await _cartService.ValidateCartAsync(userId);
+        if (cart.Items.Count == 0)
+            return BadRequest("El carrito está vacío.");
 
-        // Crear transacciones pendientes por cada item del carrito
-        foreach (var item in dto.Items)
-        {
-            var product = await _productService.GetByIdAsync(item.ProductId);
-            if (product is null) continue;
-
-            for (int i = 0; i < item.Quantity; i++)
-            {
-                await _transactionService.CreateAsync(
-                    externalId: sessionId,
-                    amount: product.Price,
-                    status: "Pending",
-                    email: dto.CustomerEmail,
-                    productId: item.ProductId
-                );
-            }
-        }
-
-        return Ok(new PaymentResponseDto
-        {
-            SessionId = sessionId,
-            PaymentUrl = dto.SuccessUrl
-        });
+        var order = await _paypalService.CreateOrderAsync(cart, dto.SuccessUrl, dto.CancelUrl);
+        return Ok(order);
     }
 
-    [HttpPost("confirm")]
-    public async Task<ActionResult> ConfirmPayment(ConfirmPaymentDto dto)
+    [HttpPost("capture-order")]
+    public async Task<ActionResult> CaptureOrder(PayPalCaptureDto dto)
     {
-        if (string.IsNullOrEmpty(dto.SessionId))
-            return BadRequest("SessionId es requerido.");
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        var transactions = await _transactionService.GetAllAsync();
-        var pending = transactions.Where(t => t.ExternalTransactionId == dto.SessionId && t.Status == "Pending").ToList();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
 
-        if (pending.Count == 0)
-            return NotFound("No se encontraron transacciones pendientes para esta sesion.");
+        var captureResult = await _paypalService.CaptureOrderAsync(dto.OrderId);
+        if (!captureResult.Success)
+            return BadRequest(captureResult.Message);
 
-        await _transactionService.UpdateStatusBySessionIdAsync(dto.SessionId, "Completed");
+        await _transactionService.CreateTransactionsFromCartAsync(userId, captureResult.OrderId, captureResult.Amount);
+        await _cartService.ClearCartAsync(userId);
 
-        return Ok(new { message = "Pago confirmado exitosamente.", sessionId = dto.SessionId });
+        return Ok(new { message = "Pago capturado exitosamente.", orderId = dto.OrderId });
     }
 
     [HttpPost("cancel")]
-    public async Task<ActionResult> CancelPayment(ConfirmPaymentDto dto)
+    public async Task<ActionResult> CancelOrder(PayPalCaptureDto dto)
     {
-        if (string.IsNullOrEmpty(dto.SessionId))
-            return BadRequest("SessionId es requerido.");
-
-        await _transactionService.UpdateStatusBySessionIdAsync(dto.SessionId, "Canceled");
-
-        return Ok(new { message = "Pago cancelado.", sessionId = dto.SessionId });
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        return Ok(new { message = "Pago cancelado.", orderId = dto.OrderId });
     }
 }
