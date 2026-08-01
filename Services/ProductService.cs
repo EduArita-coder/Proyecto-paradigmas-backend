@@ -1,11 +1,12 @@
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Dtos;
 using GAMEHOSTING_APIREST.Mappers;
+using GAMEHOSTING_APIREST.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace GAMEHOSTING_APIREST.Services;
 
-public class ProductService
+public class ProductService : IProductService
 {
     private readonly GameHostingDbContext _context;
 
