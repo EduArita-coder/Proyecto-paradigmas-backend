@@ -5,7 +5,7 @@ using GAMEHOSTING_APIREST.Services;
 namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/productos")]
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _productService;

@@ -4,14 +4,14 @@ namespace GAMEHOSTING_APIREST.Dtos;
 
 public class RegisterDto
 {
-    [Required] 
+    [Required]
     public string UserName { get; set; } = string.Empty;
 
-    [Required] 
-    [EmailAddress] 
+    [Required]
+    [EmailAddress]
     public string Email { get; set; } = string.Empty;
 
-    [Required] 
-    [MinLength(6)] 
+    [Required]
+    [MinLength(6)]
     public string Password { get; set; } = string.Empty;
 }
