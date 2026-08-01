@@ -7,9 +7,9 @@ namespace GAMEHOSTING_APIREST.Services;
 
 public class ProductService
 {
-    private readonly AppDbContext _context;
+    private readonly GameHostingDbContext _context;
 
-    public ProductService(AppDbContext context)
+    public ProductService(GameHostingDbContext context)
     {
         _context = context;
     }
