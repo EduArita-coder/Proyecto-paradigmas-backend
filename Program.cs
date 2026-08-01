@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Entities;
 using GAMEHOSTING_APIREST.Services;
+using GAMEHOSTING_APIREST.Services.Interfaces;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Usa la misma base de datos que AppDbContext; maneja carrito, transacciones
+// con Identity y usuarios (UserEntity).
+builder.Services.AddDbContext<GameHostingDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 // CORS para permitir peticiones desde el frontend React
 builder.Services.AddCors(options =>
