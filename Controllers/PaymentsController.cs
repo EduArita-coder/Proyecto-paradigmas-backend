@@ -51,7 +51,8 @@ public class PaymentsController : ControllerBase
         if (!captureResult.Success)
             return BadRequest(captureResult.Message);
 
-        await _transactionService.CreateTransactionsFromCartAsync(userId, captureResult.OrderId, captureResult.Amount);
+        var customerEmail = !string.IsNullOrEmpty(captureResult.Email) ? captureResult.Email : "cliente@example.com";
+        await _transactionService.CreateTransactionsFromCartAsync(userId, captureResult.OrderId, customerEmail);
         await _cartService.ClearCartAsync(userId);
 
         return Ok(new { message = "Pago capturado exitosamente.", orderId = dto.OrderId });
