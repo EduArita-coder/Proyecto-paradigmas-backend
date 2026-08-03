@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GAMEHOSTING_APIREST.Dtos;
 using GAMEHOSTING_APIREST.Services.Interfaces;
@@ -6,6 +8,7 @@ namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
 [Route("api/carrito")]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -15,16 +18,24 @@ public class CartController : ControllerBase
         _cartService = cartService;
     }
 
-    [HttpGet("{userId}")]
-    public async Task<ActionResult<CartDto>> GetCart(string userId)
+    [HttpGet]
+    public async Task<ActionResult<CartDto>> GetCart()
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         var cart = await _cartService.GetCartAsync(userId);
         return Ok(cart);
     }
 
-    [HttpPost("{userId}/items")]
-    public async Task<ActionResult<CartDto>> AddItem(string userId, CartItemDto dto)
+    [HttpPost("items")]
+    public async Task<ActionResult<CartDto>> AddItem([FromBody] CartItemDto dto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         try
         {
             var cart = await _cartService.AddItemToCartAsync(userId, dto.ProductId, dto.Quantity);
@@ -40,9 +51,12 @@ public class CartController : ControllerBase
         }
     }
 
-    [HttpPut("{userId}/items/{productId}")]
-    public async Task<ActionResult<CartDto>> UpdateItemQuantity(string userId, Guid productId, [FromBody] int quantity)
+    [HttpPut("items/{productId}")]
+    public async Task<ActionResult<CartDto>> UpdateItemQuantity(Guid productId, [FromBody] int quantity)
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         try
         {
             var cart = await _cartService.UpdateItemQuantityAsync(userId, productId, quantity);
@@ -54,37 +68,52 @@ public class CartController : ControllerBase
         }
     }
 
-    [HttpDelete("{userId}/items/{productId}")]
-    public async Task<ActionResult<CartDto>> RemoveItem(string userId, Guid productId)
+    [HttpDelete("items/{productId}")]
+    public async Task<ActionResult<CartDto>> RemoveItem(Guid productId)
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         var cart = await _cartService.RemoveItemFromCartAsync(userId, productId);
         return Ok(cart);
     }
 
-    [HttpDelete("{userId}")]
-    public async Task<ActionResult<CartDto>> ClearCart(string userId)
+    [HttpDelete]
+    public async Task<ActionResult<CartDto>> ClearCart()
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         var cart = await _cartService.ClearCartAsync(userId);
         return Ok(cart);
     }
 
-    [HttpGet("{userId}/validate")]
-    public async Task<ActionResult<CartDto>> ValidateCart(string userId)
+    [HttpGet("validate")]
+    public async Task<ActionResult<CartDto>> ValidateCart()
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         var cart = await _cartService.ValidateCartAsync(userId);
         return Ok(cart);
     }
 
-    [HttpGet("{userId}/totals")]
-    public async Task<ActionResult<CartDto>> CalculateTotals(string userId)
+    [HttpGet("totals")]
+    public async Task<ActionResult<CartDto>> CalculateTotals()
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         var cart = await _cartService.CalculateTotalsAsync(userId);
         return Ok(cart);
     }
 
-    [HttpPost("{userId}/checkout")]
-    public async Task<ActionResult<CartDto>> Checkout(string userId)
+    [HttpPost("checkout")]
+    public async Task<ActionResult<CartDto>> Checkout()
     {
+        var userId = GetUserId();
+        if (userId is null) return Unauthorized();
+
         try
         {
             var cart = await _cartService.CheckoutAsync(userId);
@@ -94,5 +123,10 @@ public class CartController : ControllerBase
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    private string? GetUserId()
+    {
+        return User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

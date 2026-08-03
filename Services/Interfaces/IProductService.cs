@@ -7,5 +7,7 @@ namespace GAMEHOSTING_APIREST.Services.Interfaces
         Task<List<ProductDto>> GetAllAsync();
         Task<ProductDto?> GetByIdAsync(Guid id);
         Task<ProductDto> CreateAsync(CreateProductDto dto);
+        Task<ProductDto?> UpdateAsync(Guid id, CreateProductDto dto);
+        Task<bool> DeleteAsync(Guid id);
     }
 }
