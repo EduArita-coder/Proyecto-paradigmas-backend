@@ -1,11 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using GAMEHOSTING_APIREST.Dtos;
+using GAMEHOSTING_APIREST.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using GAMEHOSTING_APIREST.Dtos;
-using GAMEHOSTING_APIREST.Entities;
 
 namespace GAMEHOSTING_APIREST.Controllers;
 
@@ -22,8 +23,9 @@ public class AuthController : ControllerBase
         _configuration = configuration;
     }
 
+    [AllowAnonymous]
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto dto)
+    public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -51,8 +53,9 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
+    public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginDto dto)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -70,6 +73,19 @@ public class AuthController : ControllerBase
 
         var response = GenerateJwtToken(user);
         return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> Me()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return NotFound();
+
+        return Ok(new { user.Id, user.UserName, user.Email });
     }
 
     private AuthResponseDto GenerateJwtToken(UserEntity user)

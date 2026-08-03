@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GAMEHOSTING_APIREST.Dtos;
 using GAMEHOSTING_APIREST.Services;
@@ -15,6 +16,7 @@ public class ProductsController : ControllerBase
         _productService = productService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<ProductDto>>> GetAll()
     {
@@ -22,6 +24,7 @@ public class ProductsController : ControllerBase
         return Ok(products);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductDto>> GetById(Guid id)
     {
@@ -30,10 +33,33 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
+    [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProductDto>> Create(CreateProductDto dto)
+    public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductDto dto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
         var product = await _productService.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] CreateProductDto dto)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        var product = await _productService.UpdateAsync(id, dto);
+        if (product is null) return NotFound();
+        return Ok(product);
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var deleted = await _productService.DeleteAsync(id);
+        if (!deleted) return NotFound();
+        return NoContent();
     }
 }
