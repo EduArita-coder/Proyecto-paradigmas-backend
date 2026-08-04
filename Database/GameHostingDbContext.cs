@@ -13,7 +13,58 @@ namespace GAMEHOSTING_APIREST.Database
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
             base.OnModelCreating(builder);
+            builder.Entity<ProductEntity>().HasData(
+            new ProductEntity
+            {
+                Id = Guid.Parse("a1b2c3d4-0001-0000-0000-000000000001"),
+                Name = "Minecraft - Plan Básico",
+                Description = "Servidor vanilla para grupos pequeños. 2 GB RAM, 10 slots.",
+                Price = 4.99m,
+                ImageUrl = "/images/minecraft.png",
+                Cpu = "Shared vCPU",
+                Ram = "2 GB",
+                Slots = 10,
+                CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new ProductEntity
+            {
+                Id = Guid.Parse("a1b2c3d4-0001-0000-0000-000000000002"),
+                Name = "Minecraft - Plan Premium",
+                Description = "Servidor con mods y plugins. 8 GB RAM, 50 slots.",
+                Price = 14.99m,
+                ImageUrl = "/images/minecraft.png",
+                Cpu = "4 vCPU",
+                Ram = "8 GB",
+                Slots = 50,
+                CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new ProductEntity
+            {
+                Id = Guid.Parse("a1b2c3d4-0001-0000-0000-000000000003"),
+                Name = "Rust - Plan Estándar",
+                Description = "Servidor dedicado para Rust. 8 GB RAM, 100 slots.",
+                Price = 19.99m,
+                ImageUrl = "/images/rust.png",
+                Cpu = "4 vCPU",
+                Ram = "8 GB",
+                Slots = 100,
+                CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc)
+            },
+            new ProductEntity
+            {
+                Id = Guid.Parse("a1b2c3d4-0001-0000-0000-000000000004"),
+                Name = "CS2 - Competitivo",
+                Description = "Servidor 128 tick para partidas competitivas. 4 GB RAM.",
+                Price = 9.99m,
+                ImageUrl = "/images/cs2.png",
+                Cpu = "2 vCPU",
+                Ram = "4 GB",
+                Slots = 16,
+                CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc)
+            }
+        );
             SetIdentityTableNames(builder);
 
             // Nombres de tablas en la base de datos relacionados al proyecto
