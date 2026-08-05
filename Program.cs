@@ -1,6 +1,7 @@
 using System.Text;
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Entities;
+using GAMEHOSTING_APIREST.Middleware;
 using GAMEHOSTING_APIREST.Services;
 using GAMEHOSTING_APIREST.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,7 +56,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClienteOnly", policy => policy.RequireRole("Cliente"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<TransactionService>();
@@ -74,15 +79,65 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseGlobalExceptionHandling();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<GameHostingDbContext>();
+    // Aplica automaticamente cualquier migracion pendiente al iniciar,
+    // asi nadie del equipo necesita correr "dotnet ef database update" a mano.
+    dbContext.Database.Migrate();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
+
+    string[] roles = { "Admin", "Cliente" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    var adminSettings = builder.Configuration.GetSection("AdminSettings");
+    var adminEmail = adminSettings.GetValue<string>("Email") ?? "admin@gamehosting.com";
+    var adminPassword = adminSettings.GetValue<string>("Password") ?? "Admin123!";
+
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser is null)
+    {
+        adminUser = new UserEntity
+        {
+            UserName = "admin",
+            Email = adminEmail,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+    else if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+    {
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
 
+var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "images");
+Directory.CreateDirectory(imagesPath); // no falla si ya existe
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "images")),
+    FileProvider = new PhysicalFileProvider(imagesPath),
     RequestPath = "/images"
 });
 
