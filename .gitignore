@@ -13,6 +13,7 @@ logs
 
 node_modules
 bower_components
+gamehosting.db
 
 *.sublime*
 
