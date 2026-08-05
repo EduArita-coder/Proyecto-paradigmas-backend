@@ -10,17 +10,23 @@ namespace GAMEHOSTING_APIREST.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _productService;
+    private readonly IWebHostEnvironment _environment;
 
-    public ProductsController(ProductService productService)
+    public ProductsController(ProductService productService, IWebHostEnvironment environment)
     {
         _productService = productService;
+        _environment = environment;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<ProductDto>>> GetAll()
+    public async Task<ActionResult<List<ProductDto>>> GetAll(
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? category = null)
     {
-        var products = await _productService.GetAllAsync();
+        var products = await _productService.GetAllAsync(page, pageSize, search, category);
         return Ok(products);
     }
 

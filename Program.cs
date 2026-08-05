@@ -1,6 +1,7 @@
 using System.Text;
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Entities;
+using GAMEHOSTING_APIREST.Middleware;
 using GAMEHOSTING_APIREST.Services;
 using GAMEHOSTING_APIREST.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
