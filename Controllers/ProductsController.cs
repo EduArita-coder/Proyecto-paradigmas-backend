@@ -68,4 +68,32 @@ public class ProductsController : ControllerBase
         if (!deleted) return NotFound();
         return NoContent();
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("upload")]
+    public async Task<ActionResult> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { message = "No se ha proporcionado ningún archivo." });
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension))
+            return BadRequest(new { message = "Formato de archivo no válido. Solo se permiten imágenes (.jpg, .png, .webp)." });
+
+        var imagesPath = Path.Combine(_environment.ContentRootPath, "images");
+        Directory.CreateDirectory(imagesPath);
+
+        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+        var filePath = Path.Combine(imagesPath, uniqueFileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relativeUrl = $"/images/{uniqueFileName}";
+        return Ok(new { imageUrl = relativeUrl });
+    }
 }
