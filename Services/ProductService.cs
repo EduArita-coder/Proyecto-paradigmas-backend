@@ -15,9 +15,39 @@ public class ProductService : IProductService
         _context = context;
     }
 
-    public async Task<List<ProductDto>> GetAllAsync()
+    public async Task<List<ProductDto>> GetAllAsync(int? page = null, int? pageSize = null, string? search = null, string? category = null)
     {
-        var products = await _context.Products.ToListAsync();
+        var query = _context.Products.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(p =>
+                p.Name.ToLower().Contains(term) ||
+                p.Description.ToLower().Contains(term));
+        }
+
+        // No hay un campo "Category" dedicado en ProductEntity todavia;
+        // por ahora se filtra por coincidencia en el nombre (ej. "minecraft", "rust", "cs2").
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            var categoryTerm = category.Trim().ToLower();
+            query = query.Where(p => p.Name.ToLower().Contains(categoryTerm));
+        }
+
+        query = query.OrderBy(p => p.Name);
+
+        // La paginacion es opcional: si no se manda page/pageSize, se devuelve
+        // el listado completo (filtrado), igual que antes, sin romper el contrato
+        // de respuesta que ya usa el frontend (un array plano de productos).
+        if (page.HasValue && pageSize.HasValue)
+        {
+            var currentPage = page.Value < 1 ? 1 : page.Value;
+            var size = pageSize.Value < 1 ? 6 : Math.Min(pageSize.Value, 50);
+            query = query.Skip((currentPage - 1) * size).Take(size);
+        }
+
+        var products = await query.ToListAsync();
         return products.Select(ProductMapper.ToDto).ToList();
     }
 
@@ -60,5 +90,10 @@ public class ProductService : IProductService
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public Task<List<ProductDto>> GetAllAsync()
+    {
+        throw new NotImplementedException();
     }
 }

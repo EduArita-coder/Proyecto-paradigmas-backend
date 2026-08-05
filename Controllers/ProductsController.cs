@@ -10,17 +10,23 @@ namespace GAMEHOSTING_APIREST.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ProductService _productService;
+    private readonly IWebHostEnvironment _environment;
 
-    public ProductsController(ProductService productService)
+    public ProductsController(ProductService productService, IWebHostEnvironment environment)
     {
         _productService = productService;
+        _environment = environment;
     }
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<ProductDto>>> GetAll()
+    public async Task<ActionResult<List<ProductDto>>> GetAll(
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null,
+        [FromQuery] string? search = null,
+        [FromQuery] string? category = null)
     {
-        var products = await _productService.GetAllAsync();
+        var products = await _productService.GetAllAsync(page, pageSize, search, category);
         return Ok(products);
     }
 
@@ -31,6 +37,38 @@ public class ProductsController : ControllerBase
         var product = await _productService.GetByIdAsync(id);
         if (product is null) return NotFound();
         return Ok(product);
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("upload")]
+    public async Task<ActionResult<object>> UploadImage(IFormFile file)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { message = "No se recibió ningún archivo." });
+
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension))
+            return BadRequest(new { message = "Formato de imagen no permitido. Usa jpg, jpeg, png o webp." });
+
+        const long maxSizeBytes = 5 * 1024 * 1024; // 5 MB
+        if (file.Length > maxSizeBytes)
+            return BadRequest(new { message = "La imagen no puede pesar más de 5 MB." });
+
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var imagesPath = Path.Combine(_environment.ContentRootPath, "images");
+        Directory.CreateDirectory(imagesPath);
+
+        var filePath = Path.Combine(imagesPath, fileName);
+
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var imageUrl = $"/images/{fileName}";
+        return Ok(new { imageUrl });
     }
 
     [Authorize(Roles = "Admin")]

@@ -1,6 +1,7 @@
 using System.Text;
 using GAMEHOSTING_APIREST.Database;
 using GAMEHOSTING_APIREST.Entities;
+using GAMEHOSTING_APIREST.Middleware;
 using GAMEHOSTING_APIREST.Services;
 using GAMEHOSTING_APIREST.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -55,7 +56,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClienteOnly", policy => policy.RequireRole("Cliente"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<TransactionService>();
@@ -74,8 +79,15 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseGlobalExceptionHandling();
+
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<GameHostingDbContext>();
+    // Aplica automaticamente cualquier migracion pendiente al iniciar,
+    // asi nadie del equipo necesita correr "dotnet ef database update" a mano.
+    dbContext.Database.Migrate();
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 

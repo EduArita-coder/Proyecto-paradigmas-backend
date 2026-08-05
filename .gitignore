@@ -21,3 +21,12 @@ thumb
 sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react
+
+# Base de datos local (cada quien genera la suya con las migraciones)
+gamehosting.db
+gamehosting.db-shm
+gamehosting.db-wal
+
+# Imagenes subidas en local durante pruebas (no son parte del codigo fuente)
+images/*
+!images/.gitkeep
