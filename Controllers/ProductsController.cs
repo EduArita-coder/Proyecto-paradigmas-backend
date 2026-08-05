@@ -40,38 +40,6 @@ public class ProductsController : ControllerBase
     }
 
     [Authorize(Roles = "Admin")]
-    [HttpPost("upload")]
-    public async Task<ActionResult<object>> UploadImage(IFormFile file)
-    {
-        if (file is null || file.Length == 0)
-            return BadRequest(new { message = "No se recibió ningún archivo." });
-
-        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-        if (!allowedExtensions.Contains(extension))
-            return BadRequest(new { message = "Formato de imagen no permitido. Usa jpg, jpeg, png o webp." });
-
-        const long maxSizeBytes = 5 * 1024 * 1024; // 5 MB
-        if (file.Length > maxSizeBytes)
-            return BadRequest(new { message = "La imagen no puede pesar más de 5 MB." });
-
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var imagesPath = Path.Combine(_environment.ContentRootPath, "images");
-        Directory.CreateDirectory(imagesPath);
-
-        var filePath = Path.Combine(imagesPath, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        var imageUrl = $"/images/{fileName}";
-        return Ok(new { imageUrl });
-    }
-
-    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductDto dto)
     {

@@ -12,10 +12,14 @@ namespace GAMEHOSTING_APIREST.Controllers;
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
+    private readonly IPaypalService _paypalService;
+    private readonly IConfiguration _configuration;
 
-    public CartController(ICartService cartService)
+    public CartController(ICartService cartService, IPaypalService paypalService, IConfiguration configuration)
     {
         _cartService = cartService;
+        _paypalService = paypalService;
+        _configuration = configuration;
     }
 
     [HttpGet]
@@ -108,20 +112,42 @@ public class CartController : ControllerBase
         return Ok(cart);
     }
 
+    /// <summary>
+    /// Inicia el proceso de pago: valida el carrito, crea una orden en PayPal
+    /// y devuelve la URL de aprobación para redirigir al usuario.
+    /// </summary>
     [HttpPost("checkout")]
-    public async Task<ActionResult<CartDto>> Checkout()
+    public async Task<ActionResult> Checkout()
     {
         var userId = GetUserId();
         if (userId is null) return Unauthorized();
 
         try
         {
+            // Validar que el carrito tenga productos
             var cart = await _cartService.CheckoutAsync(userId);
-            return Ok(cart);
+
+            // Leer URLs de configuración
+            var successUrl = _configuration["PayPal:SuccessUrl"] ?? "http://localhost:5173/checkout/success";
+            var cancelUrl  = _configuration["PayPal:CancelUrl"]  ?? "http://localhost:5173/checkout/cancel";
+
+            // Crear la orden en PayPal Sandbox
+            var paypalOrder = await _paypalService.CreateOrderAsync(cart, successUrl, cancelUrl);
+
+            // Devolver approvalUrl y orderId al frontend
+            return Ok(new
+            {
+                approvalUrl = paypalOrder.ApprovalUrl,
+                orderId     = paypalOrder.OrderId
+            });
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Error al crear la orden de pago.", detail = ex.Message });
         }
     }
 

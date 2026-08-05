@@ -8,7 +8,7 @@ namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
 [Route("api/transacciones")]
-[Authorize]
+[Authorize(Policy = "ClienteOnly")]
 public class TransactionsController : ControllerBase
 {
     private readonly TransactionService _transactionService;

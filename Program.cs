@@ -79,15 +79,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseGlobalExceptionHandling();
-
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<GameHostingDbContext>();
-    // Aplica automaticamente cualquier migracion pendiente al iniciar,
-    // asi nadie del equipo necesita correr "dotnet ef database update" a mano.
-    dbContext.Database.Migrate();
-
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 
