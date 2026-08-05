@@ -74,15 +74,58 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
+
+    string[] roles = { "Admin", "Cliente" };
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+
+    var adminSettings = builder.Configuration.GetSection("AdminSettings");
+    var adminEmail = adminSettings.GetValue<string>("Email") ?? "admin@gamehosting.com";
+    var adminPassword = adminSettings.GetValue<string>("Password") ?? "Admin123!";
+
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+    if (adminUser is null)
+    {
+        adminUser = new UserEntity
+        {
+            UserName = "admin",
+            Email = adminEmail,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        var result = await userManager.CreateAsync(adminUser, adminPassword);
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(adminUser, "Admin");
+        }
+    }
+    else if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
+    {
+        await userManager.AddToRoleAsync(adminUser, "Admin");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
 
+var imagesPath = Path.Combine(builder.Environment.ContentRootPath, "images");
+Directory.CreateDirectory(imagesPath); // no falla si ya existe
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "images")),
+    FileProvider = new PhysicalFileProvider(imagesPath),
     RequestPath = "/images"
 });
 
