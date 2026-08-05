@@ -49,7 +49,11 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Error al crear el usuario.", errors });
         }
 
-        var response = GenerateJwtToken(user);
+        // Todo usuario que se registra normalmente entra como "Cliente".
+        // El rol "Admin" solo se asigna manualmente (o via el usuario admin sembrado en Program.cs).
+        await _userManager.AddToRoleAsync(user, "Cliente");
+
+        var response = await GenerateJwtTokenAsync(user);
         return Ok(response);
     }
 
@@ -71,7 +75,7 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Credenciales inválidas." });
         }
 
-        var response = GenerateJwtToken(user);
+        var response = await GenerateJwtTokenAsync(user);
         return Ok(response);
     }
 
@@ -85,10 +89,11 @@ public class AuthController : ControllerBase
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null) return NotFound();
 
-        return Ok(new { user.Id, user.UserName, user.Email });
+        var roles = await _userManager.GetRolesAsync(user);
+        return Ok(new { user.Id, user.UserName, user.Email, roles });
     }
 
-    private AuthResponseDto GenerateJwtToken(UserEntity user)
+    private async Task<AuthResponseDto> GenerateJwtTokenAsync(UserEntity user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings.GetValue<string>("Key") ?? "SuperSecretKeyForGameHostingApiRest2026_MustBe32CharsLong!";
@@ -96,13 +101,19 @@ public class AuthController : ControllerBase
         var audience = jwtSettings.GetValue<string>("Audience") ?? "GAMEHOSTING_APIREST";
         var expireMinutes = jwtSettings.GetValue<int>("ExpireMinutes", 1440);
 
-        var claims = new[]
+        var roles = await _userManager.GetRolesAsync(user);
+
+        var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
             new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        // Un claim de rol por cada rol del usuario. Esto es lo que permite
+        // que [Authorize(Roles = "Admin")] funcione en los controllers.
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

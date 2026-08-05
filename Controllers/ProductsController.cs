@@ -33,7 +33,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<ProductDto>> Create([FromBody] CreateProductDto dto)
     {
@@ -43,7 +43,7 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult<ProductDto>> Update(Guid id, [FromBody] CreateProductDto dto)
     {
@@ -54,7 +54,7 @@ public class ProductsController : ControllerBase
         return Ok(product);
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
