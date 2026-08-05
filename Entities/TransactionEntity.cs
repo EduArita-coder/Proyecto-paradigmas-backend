@@ -12,4 +12,7 @@ public class TransactionEntity
     // FK en vez de guardar el nombre repetido (mejor práctica, evita datos duplicados)
     public Guid ProductId { get; set; }
     public ProductEntity? Product { get; set; }
+
+    public string? UserId { get; set; }
+    public UserEntity? User { get; set; }
 }

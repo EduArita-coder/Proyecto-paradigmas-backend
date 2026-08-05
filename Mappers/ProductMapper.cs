@@ -5,7 +5,7 @@ namespace GAMEHOSTING_APIREST.Mappers;
 
 public static class ProductMapper
 {
-    public static ProductDto ToDto(Product product)
+    public static ProductDto ToDto(ProductEntity product)
     {
         return new ProductDto
         {
@@ -20,9 +20,9 @@ public static class ProductMapper
         };
     }
 
-    public static Product ToEntity(CreateProductDto dto)
+    public static ProductEntity ToEntity(CreateProductDto dto)
     {
-        return new Product
+        return new ProductEntity
         {
             Id = Guid.NewGuid(),
             Name = dto.Name,
@@ -31,7 +31,8 @@ public static class ProductMapper
             ImageUrl = dto.ImageUrl,
             Cpu = dto.Cpu,
             Ram = dto.Ram,
-            Slots = dto.Slots
+            Slots = dto.Slots,
+            CreatedAt = DateTime.UtcNow
         };
     }
 }

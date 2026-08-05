@@ -21,7 +21,7 @@ public class AppDbContext : DbContext
                 Name = "Minecraft - Plan Básico",
                 Description = "Servidor vanilla para grupos pequeños. 2 GB RAM, 10 slots.",
                 Price = 4.99m,
-                ImageUrl = "/images/minecraft.png",
+                ImageUrl = "/images/Estandar.png",
                 Cpu = "Shared vCPU",
                 Ram = "2 GB",
                 Slots = 10
@@ -32,7 +32,7 @@ public class AppDbContext : DbContext
                 Name = "Minecraft - Plan Premium",
                 Description = "Servidor con mods y plugins. 8 GB RAM, 50 slots.",
                 Price = 14.99m,
-                ImageUrl = "/images/minecraft.png",
+                ImageUrl = "/images/Premium.png",
                 Cpu = "4 vCPU",
                 Ram = "8 GB",
                 Slots = 50

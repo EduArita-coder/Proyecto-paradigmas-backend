@@ -3,6 +3,7 @@ using System;
 using GAMEHOSTING_APIREST.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GAMEHOSTING_APIREST.Migrations
 {
     [DbContext(typeof(GameHostingDbContext))]
-    partial class GameHostingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260802213809_AddUserIdToTransaction")]
+    partial class AddUserIdToTransaction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
@@ -81,56 +84,6 @@ namespace GAMEHOSTING_APIREST.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("products", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-0001-0000-0000-000000000001"),
-                            Cpu = "Shared vCPU",
-                            CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Servidor vanilla para grupos pequeños. 2 GB RAM, 10 slots.",
-                            ImageUrl = "/images/minecraft.png",
-                            Name = "Minecraft - Plan Básico",
-                            Price = 4.99m,
-                            Ram = "2 GB",
-                            Slots = 10
-                        },
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-0001-0000-0000-000000000002"),
-                            Cpu = "4 vCPU",
-                            CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Servidor con mods y plugins. 8 GB RAM, 50 slots.",
-                            ImageUrl = "/images/minecraft.png",
-                            Name = "Minecraft - Plan Premium",
-                            Price = 14.99m,
-                            Ram = "8 GB",
-                            Slots = 50
-                        },
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-0001-0000-0000-000000000003"),
-                            Cpu = "4 vCPU",
-                            CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Servidor dedicado para Rust. 8 GB RAM, 100 slots.",
-                            ImageUrl = "/images/rust.png",
-                            Name = "Rust - Plan Estándar",
-                            Price = 19.99m,
-                            Ram = "8 GB",
-                            Slots = 100
-                        },
-                        new
-                        {
-                            Id = new Guid("a1b2c3d4-0001-0000-0000-000000000004"),
-                            Cpu = "2 vCPU",
-                            CreatedAt = new DateTime(2026, 8, 3, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Description = "Servidor 128 tick para partidas competitivas. 4 GB RAM.",
-                            ImageUrl = "/images/cs2.png",
-                            Name = "CS2 - Competitivo",
-                            Price = 9.99m,
-                            Ram = "4 GB",
-                            Slots = 16
-                        });
                 });
 
             modelBuilder.Entity("GAMEHOSTING_APIREST.Entities.TransactionEntity", b =>
