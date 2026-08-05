@@ -9,7 +9,7 @@ namespace GAMEHOSTING_APIREST.Controllers;
 
 [ApiController]
 [Route("api/pagos")]
-[Authorize]
+[Authorize(Policy = "ClienteOnly")]
 public class PaymentsController : ControllerBase
 {
     private readonly ICartService _cartService;

@@ -55,7 +55,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ClienteOnly", policy => policy.RequireRole("Cliente"));
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<TransactionService>();
