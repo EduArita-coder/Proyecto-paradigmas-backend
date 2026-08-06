@@ -31,7 +31,7 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var jwtKey = jwtSettings.GetValue<string>("Key") ?? "default-jwt-key";
+var jwtKey = Environment.GetEnvironmentVariable("JWT_SECRET") ?? jwtSettings.GetValue<string>("Key") ?? "default-jwt-key-gamehosting-secret-12345";
 var jwtIssuer = jwtSettings.GetValue<string>("Issuer") ?? "GAMEHOSTING_APIREST";
 var jwtAudience = jwtSettings.GetValue<string>("Audience") ?? "GAMEHOSTING_APIREST";
 
@@ -79,8 +79,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseGlobalExceptionHandling();
+
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<GameHostingDbContext>();
+    await dbContext.Database.MigrateAsync();
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
 

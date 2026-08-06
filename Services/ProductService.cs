@@ -91,9 +91,4 @@ public class ProductService : IProductService
         await _context.SaveChangesAsync();
         return true;
     }
-
-    public Task<List<ProductDto>> GetAllAsync()
-    {
-        throw new NotImplementedException();
-    }
 }
